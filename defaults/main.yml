@@ -1,1 +1,1 @@
-# default variables
+docker_hello_image: nginx:alpine

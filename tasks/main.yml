@@ -1,1 +1,72 @@
-# main tasks
+ # 1. Installeer vereiste apt pakketten voor Docker
+    - name: Installeer vereiste apt pakketten voor Docker
+      ansible.builtin.apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: yes
+      loop:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - gnupg
+        - lsb-release
+
+    # 2. Voeg de GPG-sleutel van Docker toe
+    - name: Voeg de GPG-sleutel van Docker toe
+      ansible.builtin.apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    # 3. Voeg Docker repository toe aan apt
+    - name: Voeg Docker repository toe aan apt
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_lsb.codename }} stable"
+        state: present
+        filename: docker
+
+    # 4. Installeer Docker Community Edition en afhankelijkheden
+    - name: Installeer Docker CE en afhankelijkheden
+      ansible.builtin.apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+        state: present
+        update_cache: yes
+
+    # 5. Reboot server voor correcte kernelmodule en cgroup initialisatie
+    - name: Reboot server voor correcte kernelmodule en cgroup initialisatie
+      ansible.builtin.reboot:
+        reboot_timeout: 600
+
+    # 6. Zorg dat Docker draait en geactiveerd is
+    - name: Zorg dat Docker draait en geactiveerd is
+      ansible.builtin.systemd:
+        name: docker
+        state: started
+        enabled: true
+        daemon_reload: true
+
+    # 7. Wacht tot /var/run/docker.sock beschikbaar is (voor Docker CLI)
+    - name: Wacht tot /var/run/docker.sock beschikbaar is
+      ansible.builtin.wait_for:
+        path: /var/run/docker.sock
+        state: present
+        timeout: 30
+
+    # 8. Voeg testuser toe aan de docker groep
+    - name: Voeg testuser toe aan docker groep
+      ansible.builtin.user:
+        name: testuser
+        groups: docker
+        append: yes
+
+    # 9. Start Hello World container (nginx:alpine image voor curl demo!)
+    - name: Start Hello World web container
+      docker_container:
+        name: hello-web
+        image: nginx:alpine
+        state: started
+        restart_policy: always
+        ports:
+          - "80:80"
