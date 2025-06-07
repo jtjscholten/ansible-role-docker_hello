@@ -1,0 +1,17 @@
+galaxy_info:
+  role_name: docker_hello
+  author: Jeroen Scholten
+  description: Installeert en configureert Docker op Linux systemen.
+  company: Four Boats
+  license: MIT
+  min_ansible_version: "2.9"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+  galaxy_tags:
+    - docker
+    - container
+    - automation
+dependencies: []
