@@ -8,6 +8,7 @@ Deze Ansible rol installeert en configureert Docker op Ubuntu systemen.
 - Ondersteunde platformen:
   - Ubuntu 20.04 (Focal)
   - Ubuntu 22.04 (Jammy)
+  - Ubuntu 24.04 (Noble)
 
 ## Role Variables
 
